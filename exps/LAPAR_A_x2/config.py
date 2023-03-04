@@ -5,8 +5,10 @@ class Config:
     # dataset
     DATASET = edict()
     DATASET.TYPE = 'MixDataset'
-    DATASET.DATASETS = ['DIV2K', 'Flickr2K']
-    DATASET.SPLITS = ['TRAIN', 'TRAIN']
+    # DATASET.DATASETS = ['DIV2K', 'Flickr2K']
+    # DATASET.SPLITS = ['TRAIN', 'TRAIN']
+    DATASET.DATASETS = ['DIV2K']
+    DATASET.SPLITS = ['TRAIN']
     DATASET.PHASE = 'train'
     DATASET.INPUT_HEIGHT = 64
     DATASET.INPUT_WIDTH = 64
@@ -57,7 +59,8 @@ class Config:
     VAL = edict()
     VAL.PERIOD = 10000
     VAL.TYPE = 'MixDataset'
-    VAL.DATASETS = ['BSDS100']
+    # VAL.DATASETS = ['BSDS100']
+    VAL.DATASETS = ['Set5']
     VAL.SPLITS = ['VAL']
     VAL.PHASE = 'val'
     VAL.INPUT_HEIGHT = None

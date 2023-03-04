@@ -22,31 +22,31 @@ class DATASET:
     # training dataset
     DIV2K = edict()
     DIV2K.TRAIN = edict()
-    DIV2K.TRAIN.HRx2 = '/data/liwenbo/datasets/DIV2K/DIV2K_train_HR_sub'  # 32208
-    DIV2K.TRAIN.HRx3 = '/data/liwenbo/datasets/DIV2K/DIV2K_train_HR_sub'  # 32208
-    DIV2K.TRAIN.HRx4 = '/data/liwenbo/datasets/DIV2K/DIV2K_train_HR_sub'  # 32208
-    DIV2K.TRAIN.LRx2 = '/data/liwenbo/datasets/DIV2K/DIV2K_train_LR_bicubic_sub/X2'
-    DIV2K.TRAIN.LRx3 = '/data/liwenbo/datasets/DIV2K/DIV2K_train_LR_bicubic_sub/X3'
-    DIV2K.TRAIN.LRx4 = '/data/liwenbo/datasets/DIV2K/DIV2K_train_LR_bicubic_sub/X4'
+    DIV2K.TRAIN.HRx2 = '../../datasets/DIV2K/DIV2K_train_HR_sub'  # 32208
+    DIV2K.TRAIN.HRx3 = '../../datasets/DIV2K/DIV2K_train_HR_sub'  # 32208
+    DIV2K.TRAIN.HRx4 = '../../datasets/DIV2K/DIV2K_train_HR_sub'  # 32208
+    DIV2K.TRAIN.LRx2 = '../../datasets/DIV2K/DIV2K_train_LR_bicubic/X2_sub'
+    DIV2K.TRAIN.LRx3 = '../../datasets/DIV2K/DIV2K_train_LR_bicubic/X4_sub'
+    DIV2K.TRAIN.LRx4 = '../../datasets/DIV2K/DIV2K_train_LR_bicubic/X4_sub'
 
     Flickr2K = edict()
     Flickr2K.TRAIN = edict()
-    Flickr2K.TRAIN.HRx2 = '/data/liwenbo/datasets/Flickr2K/Flickr2K_HR_sub'  # 106641
-    Flickr2K.TRAIN.HRx3 = '/data/liwenbo/datasets/Flickr2K/Flickr2K_HR_sub'  # 106641
-    Flickr2K.TRAIN.HRx4 = '/data/liwenbo/datasets/Flickr2K/Flickr2K_HR_sub'  # 106641
-    Flickr2K.TRAIN.LRx2 = '/data/liwenbo/datasets/Flickr2K/Flickr2K_LR_bicubic_sub/X2'
-    Flickr2K.TRAIN.LRx3 = '/data/liwenbo/datasets/Flickr2K/Flickr2K_LR_bicubic_sub/X3'
-    Flickr2K.TRAIN.LRx4 = '/data/liwenbo/datasets/Flickr2K/Flickr2K_LR_bicubic_sub/X4'
+    Flickr2K.TRAIN.HRx2 = None
+    Flickr2K.TRAIN.HRx3 = None
+    Flickr2K.TRAIN.HRx4 = None
+    Flickr2K.TRAIN.LRx2 = None
+    Flickr2K.TRAIN.LRx3 = None
+    Flickr2K.TRAIN.LRx4 = None
 
     # testing dataset
     Set5 = edict()
     Set5.VAL = edict()
-    Set5.VAL.HRx2 = None
-    Set5.VAL.HRx3 = None
-    Set5.VAL.HRx4 = None
-    Set5.VAL.LRx2 = None
-    Set5.VAL.LRx3 = None
-    Set5.VAL.LRx4 = None
+    Set5.VAL.HRx2 = '../../datasets/Set5/GTmod12'
+    Set5.VAL.HRx3 = '../../datasets/Set5/GTmod12'
+    Set5.VAL.HRx4 = '../../datasets/Set5/GTmod12'
+    Set5.VAL.LRx2 = '../../datasets/Set5/LRbicx2'
+    Set5.VAL.LRx3 = '../../datasets/Set5/LRbicx3'
+    Set5.VAL.LRx4 = '../../datasets/Set5/LRbicx4'
 
     Set14 = edict()
     Set14.VAL = edict()

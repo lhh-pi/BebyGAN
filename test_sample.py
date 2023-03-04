@@ -125,7 +125,7 @@ if __name__ == '__main__':
 
                 output = tensor2img(output)
                 if args.output_path:
-                    output_path = os.path.join(args.output_path, img_name)
+                    output_path = os.path.join(args.output_path, img_name.split('\\')[-1])
                     cv2.imwrite(output_path, output)
 
                 if args.gt_path:

@@ -5,8 +5,10 @@ class Config:
     # dataset
     DATASET = edict()
     DATASET.TYPE = 'MixDataset'
-    DATASET.DATASETS = ['DIV2K', 'Flickr2K']
-    DATASET.SPLITS = ['TRAIN', 'TRAIN']
+    # DATASET.DATASETS = ['DIV2K', 'Flickr2K']
+    # DATASET.SPLITS = ['TRAIN', 'TRAIN']
+    DATASET.DATASETS = ['DIV2K']
+    DATASET.SPLITS = ['TRAIN']
     DATASET.PHASE = 'train'
     DATASET.INPUT_HEIGHT = 48
     DATASET.INPUT_WIDTH = 48
@@ -17,7 +19,9 @@ class Config:
 
     # dataloader
     DATALOADER = edict()
-    DATALOADER.IMG_PER_GPU = 8
+    # DATALOADER.IMG_PER_GPU = 8
+    DATALOADER.IMG_PER_GPU = 4
+    # DATALOADER.NUM_WORKERS = 4
     DATALOADER.NUM_WORKERS = 4
 
     # model
@@ -88,7 +92,7 @@ class Config:
 
     # initialization
     CONTINUE_ITER = None
-    G_INIT_MODEL = '/data/liwenbo/sisr/bebygan/pretrained/RRDB_warmup.pth'
+    G_INIT_MODEL = '../../model/RRDB_warmup.pth'
     D_INIT_MODEL = None
 
     # log and save
@@ -99,7 +103,8 @@ class Config:
     VAL = edict()
     VAL.PERIOD = 10000
     VAL.TYPE = 'MixDataset'
-    VAL.DATASETS = ['BSDS100']
+    # VAL.DATASETS = ['BSDS100']
+    VAL.DATASETS = ['Set5']
     VAL.SPLITS = ['VAL']
     VAL.PHASE = 'val'
     VAL.INPUT_HEIGHT = None
