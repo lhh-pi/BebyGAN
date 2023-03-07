@@ -94,8 +94,8 @@ if __name__ == '__main__':
     config.REPEAT = 1
     config.VALUE_RANGE = 255.0
 
-    D = MixDataset(hr_paths=['/data/liwenbo/datasets/DIV2K/DIV2K_train_HR_sub'],
-                   lr_paths=['/data/liwenbo/datasets/DIV2K/DIV2K_train_LR_bicubic_sub/X4'],
+    D = MixDataset(hr_paths=[''],
+                   lr_paths=[''],
                    config=config)
     print(D.data_len, D.full_len)
     lr, hr = D.__getitem__(5)

@@ -147,8 +147,8 @@ def main():
         # from degraded LR to SR
         G_optimizer.zero_grad()
         output = model.G(lr_img)
-        output_det = output * (1 - flat_mask)
-        hr_det = hr_img * (1 - flat_mask)
+        output_det = output * (1 - flat_mask)  # SR细节部分，需进行对抗学习
+        hr_det = hr_img * (1 - flat_mask)  # HR细节部分,对抗学习的真实图像
         # degrade SR to LR
         bp_lr_img = resizer.imresize(output, scale=1/config.DATASET.SCALE)
 
@@ -159,12 +159,12 @@ def main():
             gen_loss = 0.0
 
             recon_loss = model.recon_loss_weight * model.recon_criterion(output, hr_img)
-            loss_dict['G_REC'] = recon_loss
+            loss_dict['G_REC'] = recon_loss  # G_REC: output 与 hr_img 的 L1 损失
             gen_loss += recon_loss
 
             # back projection loss
             bp_loss = model.bp_loss_weight * model.bp_criterion(bp_lr_img, lr_img)
-            loss_dict['G_BP'] = bp_loss
+            loss_dict['G_BP'] = bp_loss  # G_BP: bp_lr_img 与 lr_img 的 L1 Loss
             gen_loss += bp_loss
 
             if iteration > config.SOLVER.G_PREPARE_ITER:
@@ -172,7 +172,7 @@ def main():
                 if model.use_pcp:
                     pcp_loss, style_loss,_ = model.pcp_criterion(output, hr_img)
                     pcp_loss = model.pcp_loss_weight * pcp_loss
-                    loss_dict['G_PCP'] = pcp_loss
+                    loss_dict['G_PCP'] = pcp_loss  # G_PCP：感知损失，使用vgg提取高层特征，计算损失
                     gen_loss += pcp_loss
                     if style_loss is not None:
                         style_loss = model.style_loss_weight * style_loss
@@ -185,7 +185,7 @@ def main():
                 gen_real_loss = model.adv_criterion(gen_real - torch.mean(gen_fake), False, is_disc=False) * 0.5
                 gen_fake_loss = model.adv_criterion(gen_fake - torch.mean(gen_real), True, is_disc=False) * 0.5
                 gen_adv_loss = model.adv_loss_weight * (gen_real_loss + gen_fake_loss)
-                loss_dict['G_ADV'] = gen_adv_loss
+                loss_dict['G_ADV'] = gen_adv_loss  # G_ADV：生成器的生成对抗损失，nn.BCEWithLogitsLoss()
                 gen_loss += gen_adv_loss
 
             gen_loss.backward()
@@ -209,7 +209,7 @@ def main():
             dis_fake_loss = model.adv_criterion(dis_fake - torch.mean(dis_real.detach()), False, is_disc=True) * 0.5
             dis_fake_loss.backward()
 
-            loss_dict['D_ADV'] = dis_real_loss + dis_fake_loss
+            loss_dict['D_ADV'] = dis_real_loss + dis_fake_loss  # D_ADV：判别器的生成对抗损失，nn.BCEWithLogitsLoss()
 
             D_optimizer.step()
         D_lr_scheduler.step()
