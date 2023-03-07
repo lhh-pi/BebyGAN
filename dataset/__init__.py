@@ -17,7 +17,7 @@ _dataset_modules = [
 
 
 class DATASET:
-    LEGAL = ['DIV2K', 'Flickr2K', 'Set5', 'Set14', 'BSDS100', 'Urban100', 'Manga109']
+    LEGAL = ['DIV2K', 'Flickr2K', 'Set5', 'Set14', 'BSDS100', 'Urban100', 'Manga109', 'map600', 'map10']
 
     # training dataset
     DIV2K = edict()
@@ -28,6 +28,15 @@ class DATASET:
     DIV2K.TRAIN.LRx2 = '../../datasets/DIV2K/DIV2K_train_LR_bicubic/X2_sub'
     DIV2K.TRAIN.LRx3 = '../../datasets/DIV2K/DIV2K_train_LR_bicubic/X4_sub'
     DIV2K.TRAIN.LRx4 = '../../datasets/DIV2K/DIV2K_train_LR_bicubic/X4_sub'
+
+    map600 = edict()
+    map600.TRAIN = edict()
+    map600.TRAIN.HRx2 = '../../datasets/map600/map_train_HR_sub'
+    map600.TRAIN.HRx3 = '../../datasets/map600/map_train_HR_sub'
+    map600.TRAIN.HRx4 = '../../datasets/map600/map_train_HR_sub'
+    map600.TRAIN.LRx2 = '../../datasets/map600/map_train_LR_bicubic/X2_sub'
+    map600.TRAIN.LRx3 = '../../datasets/map600/map_train_LR_bicubic/X3_sub'
+    map600.TRAIN.LRx4 = '../../datasets/map600/map_train_LR_bicubic/X4_sub'
 
     Flickr2K = edict()
     Flickr2K.TRAIN = edict()
@@ -57,32 +66,14 @@ class DATASET:
     Set14.VAL.LRx3 = None
     Set14.VAL.LRx4 = None
 
-    BSDS100 = edict()
-    BSDS100.VAL = edict()
-    BSDS100.VAL.HRx2 = '/data/liwenbo/datasets/benchmark_SR/BSDS100/HR/modX2'
-    BSDS100.VAL.HRx3 = '/data/liwenbo/datasets/benchmark_SR/BSDS100/HR/modX3'
-    BSDS100.VAL.HRx4 = '/data/liwenbo/datasets/benchmark_SR/BSDS100/HR/modX4'
-    BSDS100.VAL.LRx2 = '/data/liwenbo/datasets/benchmark_SR/BSDS100/LR_bicubic/X2'
-    BSDS100.VAL.LRx3 = '/data/liwenbo/datasets/benchmark_SR/BSDS100/LR_bicubic/X3'
-    BSDS100.VAL.LRx4 = '/data/liwenbo/datasets/benchmark_SR/BSDS100/LR_bicubic/X4'
-
-    Urban100 = edict()
-    Urban100.VAL = edict()
-    Urban100.VAL.HRx2 = None
-    Urban100.VAL.HRx3 = None
-    Urban100.VAL.HRx4 = None
-    Urban100.VAL.LRx2 = None
-    Urban100.VAL.LRx3 = None
-    Urban100.VAL.LRx4 = None
-
-    Manga109 = edict()
-    Manga109.VAL = dict()
-    Manga109.VAL.HRx2 = None
-    Manga109.VAL.HRx3 = None
-    Manga109.VAL.HRx4 = None
-    Manga109.VAL.LRx2 = None
-    Manga109.VAL.LRx3 = None
-    Manga109.VAL.LRx4 = None
+    map10 = edict()
+    map10.VAL = edict()
+    map10.VAL.HRx2 = '../../datasets/map600/map10/gt'
+    map10.VAL.HRx3 = '../../datasets/map600/map10/gt'
+    map10.VAL.HRx4 = '../../datasets/map600/map10/gt'
+    map10.VAL.LRx2 = '../../datasets/map600/map10/X2'
+    map10.VAL.LRx3 = '../../datasets/map600/map10/X3'
+    map10.VAL.LRx4 = '../../datasets/map600/map10/X4'
 
 
 def get_dataset(config):
