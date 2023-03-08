@@ -13,7 +13,7 @@ class Config:
     DATASET.PHASE = 'train'
     DATASET.INPUT_HEIGHT = 48
     DATASET.INPUT_WIDTH = 48
-    DATASET.SCALE = 4
+    DATASET.SCALE = 2
     DATASET.REPEAT = 1
     DATASET.VALUE_RANGE = 255.0
     DATASET.SEED = 100
@@ -31,11 +31,16 @@ class Config:
     MODEL.FLAT_STD = 0.025
     # generator
     MODEL.G = edict()
-    MODEL.G.IN_CHANNEL = 3
-    MODEL.G.OUT_CHANNEL = 3
-    MODEL.G.N_CHANNEL = 64
-    MODEL.G.N_BLOCK = 23
-    MODEL.G.N_GROWTH_CHANNEL = 32
+    MODEL.G.UPSCALE = DATASET.SCALE
+    MODEL.G.IMG_SIZE = DATASET.INPUT_HEIGHT
+    MODEL.G.WINDOW_SIZE = 8
+    MODEL.G.DEPTHS = [6, 6, 6, 6, 6, 6]
+    MODEL.G.EMBED_DIM = 180
+    MODEL.G.NUM_HEADS = [6, 6, 6, 6, 6, 6]
+    MODEL.G.MLP_RATIO = 2
+    MODEL.G.UPSAMPLER = 'pixelshuffle'
+    MODEL.G.ALPHA = 0.1
+
     # discriminator
     MODEL.D = edict()
     MODEL.D.IN_CHANNEL = 3
@@ -54,7 +59,7 @@ class Config:
     # Perceptual loss
     MODEL.USE_PCP_LOSS = True
     MODEL.USE_STYLE_LOSS = False
-    MODEL.PCP_LOSS_WEIGHT = 1.0
+    MODEL.PCP_LOSS_WEIGHT = 1.
     MODEL.STYLE_LOSS_WEIGHT = 0
     MODEL.PCP_LOSS_TYPE = 'l1'  # l1 | l2 | fro
     MODEL.VGG_TYPE = 'vgg19'
@@ -70,7 +75,7 @@ class Config:
     SOLVER = edict()
     # generator
     SOLVER.G_OPTIMIZER = 'Adam'
-    SOLVER.G_BASE_LR = 1e-4
+    SOLVER.G_BASE_LR = 1e-7
     SOLVER.G_BETA1 = 0.9
     SOLVER.G_BETA2 = 0.999
     SOLVER.G_WEIGHT_DECAY = 0
@@ -88,21 +93,24 @@ class Config:
     # both G and D
     SOLVER.WARM_UP_ITER = 2000
     SOLVER.WARM_UP_FACTOR = 0.1
-    SOLVER.T_PERIOD = [200000, 400000, 600000]
+    SOLVER.T_PERIOD = [100000, 200000, 300000]
     SOLVER.MAX_ITER = SOLVER.T_PERIOD[-1]
 
     # initialization
     CONTINUE_ITER = None
-    G_INIT_MODEL = '../../model/RRDB_warmup.pth'
+    G_INIT_MODEL = '../../model/mapsr_x2_warmup.pth'
+    # G_INIT_MODEL = ''
     D_INIT_MODEL = None
 
     # log and save
     LOG_PERIOD = 20
-    SAVE_PERIOD = 10000
+    # SAVE_PERIOD = 10000
+    SAVE_PERIOD = 20
 
     # validation
     VAL = edict()
-    VAL.PERIOD = 10000
+    # VAL.PERIOD = 10000
+    VAL.PERIOD = 20
     VAL.TYPE = 'MixDataset'
     # VAL.DATASETS = ['BSDS100']
     # VAL.DATASETS = ['Set5']
@@ -116,7 +124,7 @@ class Config:
     VAL.VALUE_RANGE = 255.0
     VAL.IMG_PER_GPU = 1
     VAL.NUM_WORKERS = 1
-    VAL.SAVE_IMG = False
+    VAL.SAVE_IMG = True
     VAL.TO_Y = True
     VAL.CROP_BORDER = VAL.SCALE
 

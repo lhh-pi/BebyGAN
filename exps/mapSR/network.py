@@ -7,24 +7,29 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from utils.modules.rrdb import RRDBNet
+from utils.modules.mapsr import MapSR
 from utils.loss import AdversarialLoss, PerceptualLoss, BBL
-from utils.modules.discriminator import Discriminator_VGG_192
+from utils.modules.discriminator import Discriminator_VGG_scale
 
 
-class Generator(RRDBNet):
+class Generator(MapSR):
     def __init__(self, config):
-        super(Generator, self).__init__(in_nc=config.MODEL.G.IN_CHANNEL,
-                                        out_nc=config.MODEL.G.OUT_CHANNEL,
-                                        nf=config.MODEL.G.N_CHANNEL,
-                                        nb=config.MODEL.G.N_BLOCK,
-                                        gc=config.MODEL.G.N_GROWTH_CHANNEL)
+        super(Generator, self).__init__(upscale=config.MODEL.G.UPSCALE,
+                                        img_size=config.MODEL.G.IMG_SIZE,
+                                        window_size=config.MODEL.G.WINDOW_SIZE,
+                                        depths=config.MODEL.G.DEPTHS,
+                                        embed_dim=config.MODEL.G.EMBED_DIM,
+                                        num_heads=config.MODEL.G.NUM_HEADS,
+                                        mlp_ratio=config.MODEL.G.MLP_RATIO,
+                                        upsampler=config.MODEL.G.UPSAMPLER,
+                                        alpha=config.MODEL.G.ALPHA)
 
 
-class Discriminator(Discriminator_VGG_192):
+class Discriminator(Discriminator_VGG_scale):
     def __init__(self, config):
         super(Discriminator, self).__init__(in_chl=config.MODEL.D.IN_CHANNEL,
-                                            nf=config.MODEL.D.N_CHANNEL)
+                                            nf=config.MODEL.D.N_CHANNEL,
+                                            scale=config.MODEL.SCALE)
 
 
 class Network:

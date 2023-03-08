@@ -2,8 +2,10 @@ import argparse
 import os
 import os.path as osp
 import sys
+
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)) + '/../..')
 import logging
+import time
 from collections import OrderedDict
 
 import torch
@@ -48,12 +50,13 @@ def main():
     # set up dirs and log
     exp_dir, cur_dir = osp.split(osp.split(osp.realpath(__file__))[0])
     root_dir = osp.split(exp_dir)[0]
-    log_dir = osp.join(root_dir, 'logs', cur_dir)
+    log_dir = osp.join(root_dir, 'logs', f"train_{cur_dir}_archived_{time.strftime('%Y%m%d_%H%M%S', time.localtime())}")
     model_dir = osp.join(log_dir, 'models')
     solver_dir = osp.join(log_dir, 'solvers')
     if rank <= 0:
         common.mkdir(log_dir)
-        ln_log_dir = osp.join(exp_dir, cur_dir, 'log')
+        ln_log_dir = osp.join(exp_dir, cur_dir,
+                              f"train_{cur_dir}_archived_{time.strftime('%Y%m%d_%H%M%S', time.localtime())}")
         if not osp.exists(ln_log_dir):
             os.system('ln -s %s log' % log_dir)
         common.mkdir(model_dir)
@@ -82,11 +85,11 @@ def main():
     if config.G_INIT_MODEL:
         if rank <= 0:
             logger.info('[Initing] Generator')
-        model_opr.load_model(model.G, config.G_INIT_MODEL, strict=False, cpu=True)
+        model_opr.load_model(model.G, config.G_INIT_MODEL, strict=True, cpu=True)
     if config.D_INIT_MODEL:
         if rank <= 0:
             logger.info('[Initing] Discriminator')
-        model_opr.load_model(model.D, config.D_INIT_MODEL, strict=False, cpu=True)
+        model_opr.load_model(model.D, config.D_INIT_MODEL, strict=True, cpu=True)
 
     # load models to continue training
     if config.CONTINUE_ITER:
@@ -150,7 +153,7 @@ def main():
         output_det = output * (1 - flat_mask)  # SR细节部分，需进行对抗学习
         hr_det = hr_img * (1 - flat_mask)  # HR细节部分,对抗学习的真实图像
         # degrade SR to LR
-        bp_lr_img = resizer.imresize(output, scale=1/config.DATASET.SCALE)
+        bp_lr_img = resizer.imresize(output, scale=1 / config.DATASET.SCALE)
 
         loss_dict = OrderedDict()
 
@@ -170,7 +173,7 @@ def main():
             if iteration > config.SOLVER.G_PREPARE_ITER:
                 # perceptual / style loss
                 if model.use_pcp:
-                    pcp_loss, style_loss,_ = model.pcp_criterion(output, hr_img)
+                    pcp_loss, style_loss, _ = model.pcp_criterion(output, hr_img)
                     pcp_loss = model.pcp_loss_weight * pcp_loss
                     loss_dict['G_PCP'] = pcp_loss  # G_PCP：感知损失，使用vgg提取高层特征，计算损失
                     gen_loss += pcp_loss
@@ -240,6 +243,14 @@ def main():
                     psnr, ssim = validate(model, val_loader, config, device, iteration, save_path=save_dir)
                 if psnr > max_psnr:
                     max_psnr, max_ssim, max_iter = psnr, ssim, iteration
+                    G_best_model_path = osp.join(model_dir, 'best_%d_G.pth' % iteration)
+                    D_best_model_path = osp.join(model_dir, 'best_%d_D.pth' % iteration)
+                    model_opr.save_model(model.G, G_best_model_path)
+                    model_opr.save_model(model.D, D_best_model_path)
+                    G_best_solver_path = osp.join(solver_dir, 'best_%d_G.solver' % iteration)
+                    D_best_solver_path = osp.join(solver_dir, 'best_%d_D.solver' % iteration)
+                    model_opr.save_solver(G_optimizer, G_lr_scheduler, iteration, G_best_solver_path)
+                    model_opr.save_solver(D_optimizer, D_lr_scheduler, iteration, D_best_solver_path)
                 logger.info('[Val Result] Iter: %d, PSNR: %.4f, SSIM: %.4f' % (iteration, psnr, ssim))
                 logger.info('[Best Result] Iter: %d, PSNR: %.4f, SSIM: %.4f' % (max_iter, max_psnr, max_ssim))
 
