@@ -6,7 +6,8 @@ import torch.nn.functional as F
 
 
 def get_flat_mask(img, kernel_size=7, std_thresh=0.03, scale=1):
-    img = F.interpolate(img, scale_factor=scale, mode='bicubic', align_corners=False)  # 将LR插值到HR大小
+    # img = F.interpolate(img, scale_factor=scale, mode='bicubic', align_corners=False)  # 将LR插值到HR大小
+
     B, _, H, W = img.size()
     r, g, b = torch.unbind(img, dim=1)
     l_img = (0.2989 * r + 0.587 * g + 0.114 * b).unsqueeze(dim=1)  # rgb --> gray

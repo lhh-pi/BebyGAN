@@ -139,7 +139,10 @@ def main():
         lr_img = lr_img.to(device)
         hr_img = hr_img.to(device)
 
-        flat_mask = region_seperator.get_flat_mask(lr_img, kernel_size=config.MODEL.FLAT_KSIZE,
+        # flat_mask = region_seperator.get_flat_mask(lr_img, kernel_size=config.MODEL.FLAT_KSIZE,
+        #                                            std_thresh=config.MODEL.FLAT_STD,
+        #                                            scale=config.DATASET.SCALE)
+        flat_mask = region_seperator.get_flat_mask(hr_img, kernel_size=config.MODEL.FLAT_KSIZE,
                                                    std_thresh=config.MODEL.FLAT_STD,
                                                    scale=config.DATASET.SCALE)
 
