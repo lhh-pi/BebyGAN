@@ -9,7 +9,7 @@ import torch.nn.functional as F
 
 from utils.modules.rrdb import RRDBNet
 from utils.loss import AdversarialLoss, PerceptualLoss, BBL
-from utils.modules.discriminator import Discriminator_VGG_192
+from utils.modules.discriminator import Discriminator_VGG_192, Discriminator_VGG_scale
 
 
 class Generator(RRDBNet):
@@ -18,13 +18,21 @@ class Generator(RRDBNet):
                                         out_nc=config.MODEL.G.OUT_CHANNEL,
                                         nf=config.MODEL.G.N_CHANNEL,
                                         nb=config.MODEL.G.N_BLOCK,
-                                        gc=config.MODEL.G.N_GROWTH_CHANNEL)
+                                        gc=config.MODEL.G.N_GROWTH_CHANNEL,
+                                        scale=config.MODEL.G.SCALE)
 
 
-class Discriminator(Discriminator_VGG_192):
+# class Discriminator(Discriminator_VGG_192):
+#     def __init__(self, config):
+#         super(Discriminator, self).__init__(in_chl=config.MODEL.D.IN_CHANNEL,
+#                                             nf=config.MODEL.D.N_CHANNEL)
+
+
+class Discriminator(Discriminator_VGG_scale):
     def __init__(self, config):
         super(Discriminator, self).__init__(in_chl=config.MODEL.D.IN_CHANNEL,
-                                            nf=config.MODEL.D.N_CHANNEL)
+                                            nf=config.MODEL.D.N_CHANNEL,
+                                            scale=config.MODEL.SCALE)
 
 
 class Network:
@@ -69,5 +77,4 @@ if __name__ == '__main__':
     from config import config
 
     net = Network(config)
-    print("model have {:.3f}M paramerters in total".format(sum(x.numel() for x in net.G.parameters())/1e6))
-
+    print("model have {:.3f}M paramerters in total".format(sum(x.numel() for x in net.G.parameters()) / 1e6))

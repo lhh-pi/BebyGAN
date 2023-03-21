@@ -7,12 +7,12 @@ class Config:
     DATASET.TYPE = 'MixDataset'
     # DATASET.DATASETS = ['DIV2K', 'Flickr2K']
     # DATASET.SPLITS = ['TRAIN', 'TRAIN']
-    DATASET.DATASETS = ['DIV2K']
+    DATASET.DATASETS = ['map600']
     DATASET.SPLITS = ['TRAIN']
     DATASET.PHASE = 'train'
     DATASET.INPUT_HEIGHT = 48
     DATASET.INPUT_WIDTH = 48
-    DATASET.SCALE = 4
+    DATASET.SCALE = 3
     DATASET.REPEAT = 1
     DATASET.VALUE_RANGE = 255.0
     DATASET.SEED = 100
@@ -35,6 +35,7 @@ class Config:
     MODEL.G.N_CHANNEL = 64
     MODEL.G.N_BLOCK = 23
     MODEL.G.N_GROWTH_CHANNEL = 32
+    MODEL.G.SCALE = DATASET.SCALE
     # discriminator
     MODEL.D = edict()
     MODEL.D.IN_CHANNEL = 3
@@ -104,7 +105,7 @@ class Config:
     VAL.PERIOD = 10000
     VAL.TYPE = 'MixDataset'
     # VAL.DATASETS = ['BSDS100']
-    VAL.DATASETS = ['Set5']
+    VAL.DATASETS = ['map10']
     VAL.SPLITS = ['VAL']
     VAL.PHASE = 'val'
     VAL.INPUT_HEIGHT = None
