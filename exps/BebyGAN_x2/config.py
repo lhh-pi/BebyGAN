@@ -7,7 +7,6 @@ class Config:
     DATASET.TYPE = 'MixDataset'
     # DATASET.DATASETS = ['DIV2K', 'Flickr2K']
     # DATASET.SPLITS = ['TRAIN', 'TRAIN']
-    # DATASET.DATASETS = ['DIV2K']
     DATASET.DATASETS = ['map600']
     DATASET.SPLITS = ['TRAIN']
     DATASET.PHASE = 'train'
@@ -23,7 +22,7 @@ class Config:
     # DATALOADER.IMG_PER_GPU = 8
     DATALOADER.IMG_PER_GPU = 4
     # DATALOADER.NUM_WORKERS = 4
-    DATALOADER.NUM_WORKERS = 1
+    DATALOADER.NUM_WORKERS = 4
 
     # model
     MODEL = edict()
@@ -31,22 +30,18 @@ class Config:
     MODEL.FLAT_STD = 0.025
     # generator
     MODEL.G = edict()
-    MODEL.G.UPSCALE = DATASET.SCALE
-    MODEL.G.IMG_SIZE = DATASET.INPUT_HEIGHT
-    MODEL.G.WINDOW_SIZE = 8
-    MODEL.G.DEPTHS = [6, 6, 6, 6, 6, 6]
-    MODEL.G.EMBED_DIM = 180
-    MODEL.G.NUM_HEADS = [6, 6, 6, 6, 6, 6]
-    MODEL.G.MLP_RATIO = 2
-    MODEL.G.UPSAMPLER = 'pixelshuffle'
-    MODEL.G.ALPHA = 0.01
-
+    MODEL.G.IN_CHANNEL = 3
+    MODEL.G.OUT_CHANNEL = 3
+    MODEL.G.N_CHANNEL = 64
+    MODEL.G.N_BLOCK = 23
+    MODEL.G.N_GROWTH_CHANNEL = 32
+    MODEL.G.SCALE = DATASET.SCALE
     # discriminator
     MODEL.D = edict()
     MODEL.D.IN_CHANNEL = 3
     MODEL.D.N_CHANNEL = 32
     MODEL.D.LOSS_TYPE = 'vanilla'  # vanilla | lsgan | wgan | wgan_softplus | hinge
-    # recon loss, adversarial loss, back projection loss
+    # best buddy loss, adversarial loss, back projection loss
     MODEL.BBL_WEIGHT = 1.0
     MODEL.BBL_ALPHA = 1.0
     MODEL.BBL_BETA = 1.0
@@ -54,15 +49,12 @@ class Config:
     MODEL.BBL_PAD = 0
     MODEL.BBL_STRIDE = 3
     MODEL.BBL_TYPE = 'l1'
-    MODEL.REC_TYPE = 'l1'
-    MODEL.BP_TYPE = 'l1'
-    MODEL.REC_WEIGHT = 1.0
     MODEL.ADV_LOSS_WEIGHT = 0.005
     MODEL.BACK_PROJECTION_LOSS_WEIGHT = 1.0
     # Perceptual loss
     MODEL.USE_PCP_LOSS = True
     MODEL.USE_STYLE_LOSS = False
-    MODEL.PCP_LOSS_WEIGHT = 1.
+    MODEL.PCP_LOSS_WEIGHT = 1.0
     MODEL.STYLE_LOSS_WEIGHT = 0
     MODEL.PCP_LOSS_TYPE = 'l1'  # l1 | l2 | fro
     MODEL.VGG_TYPE = 'vgg19'
@@ -78,7 +70,7 @@ class Config:
     SOLVER = edict()
     # generator
     SOLVER.G_OPTIMIZER = 'Adam'
-    SOLVER.G_BASE_LR = 1e-6
+    SOLVER.G_BASE_LR = 1e-4
     SOLVER.G_BETA1 = 0.9
     SOLVER.G_BETA2 = 0.999
     SOLVER.G_WEIGHT_DECAY = 0
@@ -96,28 +88,23 @@ class Config:
     # both G and D
     SOLVER.WARM_UP_ITER = 2000
     SOLVER.WARM_UP_FACTOR = 0.1
-    SOLVER.T_PERIOD = [100000, 200000, 300000]
+    SOLVER.T_PERIOD = [200000, 400000, 600000]
     SOLVER.MAX_ITER = SOLVER.T_PERIOD[-1]
 
     # initialization
     CONTINUE_ITER = None
-    G_INIT_MODEL = '../../model/mapsr_x2_warmup.pth'
-    # G_INIT_MODEL = ''
+    G_INIT_MODEL = '../../model/RRDB_warmup.pth'
     D_INIT_MODEL = None
 
     # log and save
-    # LOG_PERIOD = 50
     LOG_PERIOD = 20
-    # SAVE_PERIOD = 10000
-    SAVE_PERIOD = 20
+    SAVE_PERIOD = 10000
 
     # validation
     VAL = edict()
-    # VAL.PERIOD = 10000
-    VAL.PERIOD = 20
+    VAL.PERIOD = 10000
     VAL.TYPE = 'MixDataset'
     # VAL.DATASETS = ['BSDS100']
-    # VAL.DATASETS = ['Set5']
     VAL.DATASETS = ['map10']
     VAL.SPLITS = ['VAL']
     VAL.PHASE = 'val'
@@ -125,7 +112,7 @@ class Config:
     VAL.INPUT_WIDTH = None
     VAL.SCALE = DATASET.SCALE
     VAL.REPEAT = 1
-    VAL.VALUE_RANGE = 255.
+    VAL.VALUE_RANGE = 255.0
     VAL.IMG_PER_GPU = 1
     VAL.NUM_WORKERS = 1
     VAL.SAVE_IMG = False

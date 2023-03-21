@@ -64,7 +64,7 @@ class BBL(nn.Module):
         if criterion == 'l1':
             self.criterion = torch.nn.L1Loss(reduction='mean')
         elif criterion == 'l2':
-            self.criterion = torch.nn.L2loss(reduction='mean')
+            self.criterion = torch.nn.MSELoss(reduction='mean')
         else:
             raise NotImplementedError('%s criterion has not been supported.' % criterion)
 
@@ -131,26 +131,26 @@ class BBL(nn.Module):
     def forward(self, x, gt):
         p1 = F.unfold(x, kernel_size=self.ksize, padding=self.pad, stride=self.stride)
         B, C, H = p1.size()
-        p1 = p1.permute(0, 2, 1).contiguous() # [B, H, C]
+        p1 = p1.permute(0, 2, 1).contiguous()  # [B, H, C]
 
         p2 = F.unfold(gt, kernel_size=self.ksize, padding=self.pad, stride=self.stride)
-        p2 = p2.permute(0, 2, 1).contiguous() # [B, H, C]
+        p2 = p2.permute(0, 2, 1).contiguous()  # [B, H, C]
 
-        gt_2 = F.interpolate(gt, scale_factor=0.5, mode='bicubic', align_corners = False)
+        gt_2 = F.interpolate(gt, scale_factor=0.5, mode='bicubic', align_corners=False)
         p2_2 = F.unfold(gt_2, kernel_size=self.ksize, padding=self.pad, stride=self.stride)
-        p2_2 = p2_2.permute(0, 2, 1).contiguous() # [B, H, C]
+        p2_2 = p2_2.permute(0, 2, 1).contiguous()  # [B, H, C]
 
-        gt_4 = F.interpolate(gt, scale_factor=0.25, mode='bicubic',align_corners = False)
+        gt_4 = F.interpolate(gt, scale_factor=0.25, mode='bicubic', align_corners=False)
         p2_4 = F.unfold(gt_4, kernel_size=self.ksize, padding=self.pad, stride=self.stride)
-        p2_4 = p2_4.permute(0, 2, 1).contiguous() # [B, H, C]
+        p2_4 = p2_4.permute(0, 2, 1).contiguous()  # [B, H, C]
         p2_cat = torch.cat([p2, p2_2, p2_4], 1)
 
         score1 = self.alpha * self.batch_pairwise_distance(p1, p2_cat)
-        score = score1 + self.beta * self.batch_pairwise_distance(p2, p2_cat) # [B, H, H]
+        score = score1 + self.beta * self.batch_pairwise_distance(p2, p2_cat)  # [B, H, H]
 
-        weight, ind = torch.min(score, dim=2) # [B, H]
-        index = ind.unsqueeze(-1).expand([-1, -1, C]) # [B, H, C]
-        sel_p2 = torch.gather(p2_cat, dim=1, index=index) # [B, H, C]
+        weight, ind = torch.min(score, dim=2)  # [B, H]
+        index = ind.unsqueeze(-1).expand([-1, -1, C])  # [B, H, C]
+        sel_p2 = torch.gather(p2_cat, dim=1, index=index)  # [B, H, C]
 
         loss = self.criterion(p1, sel_p2)
 
@@ -205,7 +205,7 @@ class PerceptualLoss(nn.Module):
         if self.criterion_type == 'l1':
             self.criterion = torch.nn.L1Loss()
         elif self.criterion_type == 'l2':
-            self.criterion = torch.nn.L2loss()
+            self.criterion = torch.nn.MSELoss()
         elif self.criterion_type == 'fro':
             self.criterion = None
         else:
@@ -260,7 +260,7 @@ class PerceptualLoss(nn.Module):
         else:
             style_loss = None
 
-        return percep_loss, style_loss,non_local_loss
+        return percep_loss, style_loss, non_local_loss
 
     def _gram_mat(self, x):
         """Calculate Gram matrix.
@@ -363,3 +363,15 @@ class AdversarialLoss(nn.Module):
 
         return loss
 
+
+class LLoss(nn.Module):
+    def __init__(self, criterion='l1'):
+        super(LLoss, self).__init__()
+
+        if criterion == 'l1':
+            self.criterion = torch.nn.L1Loss(reduction='mean')
+        elif criterion == 'l2':
+            self.criterion = torch.nn.MSELoss(reduction='mean')
+
+    def forward(self, x, gt):
+        return self.criterion(x, gt)

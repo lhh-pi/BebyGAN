@@ -7,22 +7,25 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from utils.modules.mapsr import MapSR
-from utils.loss import AdversarialLoss, PerceptualLoss, LLoss
-from utils.modules.discriminator import Discriminator_VGG_scale
+from utils.modules.rrdb import RRDBNet
+from utils.loss import AdversarialLoss, PerceptualLoss, BBL
+from utils.modules.discriminator import Discriminator_VGG_192, Discriminator_VGG_scale
 
 
-class Generator(MapSR):
+class Generator(RRDBNet):
     def __init__(self, config):
-        super(Generator, self).__init__(upscale=config.MODEL.G.UPSCALE,
-                                        img_size=config.MODEL.G.IMG_SIZE,
-                                        window_size=config.MODEL.G.WINDOW_SIZE,
-                                        depths=config.MODEL.G.DEPTHS,
-                                        embed_dim=config.MODEL.G.EMBED_DIM,
-                                        num_heads=config.MODEL.G.NUM_HEADS,
-                                        mlp_ratio=config.MODEL.G.MLP_RATIO,
-                                        upsampler=config.MODEL.G.UPSAMPLER,
-                                        alpha=config.MODEL.G.ALPHA)
+        super(Generator, self).__init__(in_nc=config.MODEL.G.IN_CHANNEL,
+                                        out_nc=config.MODEL.G.OUT_CHANNEL,
+                                        nf=config.MODEL.G.N_CHANNEL,
+                                        nb=config.MODEL.G.N_BLOCK,
+                                        gc=config.MODEL.G.N_GROWTH_CHANNEL,
+                                        scale=config.MODEL.G.SCALE)
+
+
+# class Discriminator(Discriminator_VGG_192):
+#     def __init__(self, config):
+#         super(Discriminator, self).__init__(in_chl=config.MODEL.D.IN_CHANNEL,
+#                                             nf=config.MODEL.D.N_CHANNEL)
 
 
 class Discriminator(Discriminator_VGG_scale):
@@ -37,20 +40,18 @@ class Network:
         self.G = Generator(config)
         self.D = Discriminator(config)
 
-        # self.recon_loss_weight = config.MODEL.BBL_WEIGHT
-        self.recon_loss_weight = config.MODEL.REC_WEIGHT
+        self.recon_loss_weight = config.MODEL.BBL_WEIGHT
         self.adv_loss_weight = config.MODEL.ADV_LOSS_WEIGHT
         self.bp_loss_weight = config.MODEL.BACK_PROJECTION_LOSS_WEIGHT
         self.use_pcp = config.MODEL.USE_PCP_LOSS
-        # self.recon_criterion = BBL(alpha=config.MODEL.BBL_ALPHA,
-        #                            beta=config.MODEL.BBL_BETA,
-        #                            ksize=config.MODEL.BBL_KSIZE,
-        #                            pad=config.MODEL.BBL_PAD,
-        #                            stride=config.MODEL.BBL_STRIDE,
-        #                            criterion=config.MODEL.BBL_TYPE)
-        self.recon_criterion = LLoss(criterion=config.MODEL.REC_TYPE)
+        self.recon_criterion = BBL(alpha=config.MODEL.BBL_ALPHA,
+                                   beta=config.MODEL.BBL_BETA,
+                                   ksize=config.MODEL.BBL_KSIZE,
+                                   pad=config.MODEL.BBL_PAD,
+                                   stride=config.MODEL.BBL_STRIDE,
+                                   criterion=config.MODEL.BBL_TYPE)
         self.adv_criterion = AdversarialLoss(gan_type=config.MODEL.D.LOSS_TYPE)
-        self.bp_criterion = LLoss(criterion=config.MODEL.BP_TYPE)
+        self.bp_criterion = nn.L1Loss(reduction='mean')
         if self.use_pcp:
             self.pcp_criterion = PerceptualLoss(layer_weights=config.MODEL.VGG_LAYER_WEIGHTS,
                                                 vgg_type=config.MODEL.VGG_TYPE,
@@ -76,5 +77,4 @@ if __name__ == '__main__':
     from config import config
 
     net = Network(config)
-    print("model have {:.3f}M paramerters in total".format(sum(x.numel() for x in net.G.parameters())/1e6))
-
+    print("model have {:.3f}M paramerters in total".format(sum(x.numel() for x in net.G.parameters()) / 1e6))
